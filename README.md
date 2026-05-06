@@ -66,7 +66,7 @@ If running locally, edit `OUTPUT_DIR` in the script or adapt it to your local pa
 
 ```bash
 python scripts/theratime_kappa.py -f \
-  annotations/theratime_150_asmae_human_corrected_annotations.csv \
+  annotations/theratime_150_Hasnae_human_corrected_annotations.csv \
   annotations/theratime_human_annotations_Asmae_150_updated_reviewed.csv
 ```
 
@@ -82,7 +82,7 @@ theratime_disagreements.csv
 ```bash
 python scripts/theratime_post_calibration.py \
   --auto /kaggle/working/theratime_v06_outputs/all_judgments_mpnet.csv \
-  --ann annotations/theratime_150_asmae_human_corrected_annotations.csv \
+  --ann annotations/theratime_150_Hasnae_human_corrected_annotations.csv \
         annotations/theratime_human_annotations_Asmae_150_updated_reviewed.csv \
   --out-dir /kaggle/working/theratime_post_calibration_outputs \
   --methods all
@@ -101,7 +101,7 @@ python scripts/theratime_selective_reliability.py \
 ```bash
 python scripts/theratime_error_recall.py \
   --disagreements theratime_disagreements.csv \
-  --annotations1 annotations/theratime_150_asmae_human_corrected_annotations.csv \
+  --annotations1 annotations/theratime_150_Hasnae_human_corrected_annotations.csv \
   --annotations2 annotations/theratime_human_annotations_Asmae_150_updated_reviewed.csv \
   --out theratime_screening_recall_report.csv
 ```
