@@ -4,16 +4,16 @@ title: "TheraTime: a reliability-aware software framework for therapeutic timing
 version: "0.6-neurocomputing"
 authors:
   - family-names: "Briouya"
-    given-names: "Hasnae"
-  - family-names: "Briouya"
     given-names: "Asmae"
+  - family-names: "Briouya"
+    given-names: "Hasnae"
   - family-names: "Choukri"
     given-names: "Ali"
   - family-names: "Amnai"
     given-names: "Mohamed"
 license: MIT
-repository-code: "https://github.com/USERNAME/theratime"
-doi: "10.5281/zenodo.XXXXXXX"
+repository-code: "https://github.com/briouyaasmae/theratime"
+doi: "10.5281/zenodo.20058732"
 date-released: "2026-05-06"
 keywords:
   - mental-health response retrieval
