@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use TheraTime, please cite the software and associated paper."
+title: "TheraTime: a reliability-aware software framework for therapeutic timing evaluation in mental-health response retrieval"
+version: "0.6-neurocomputing"
+authors:
+  - family-names: "Briouya"
+    given-names: "Hasnae"
+  - family-names: "Briouya"
+    given-names: "Asmae"
+  - family-names: "Choukri"
+    given-names: "Ali"
+  - family-names: "Amnai"
+    given-names: "Mohamed"
+license: MIT
+repository-code: "https://github.com/USERNAME/theratime"
+doi: "10.5281/zenodo.XXXXXXX"
+date-released: "2026-05-06"
+keywords:
+  - mental-health response retrieval
+  - therapeutic timing
+  - reliability calibration
+  - selective prediction
+  - human annotation
