@@ -1,5 +1,4 @@
-[![DOI](https://zenodo.org/badge/1231250539.svg)](https://doi.org/10.5281/zenodo.20058732)
-
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20058732.svg)](https://doi.org/10.5281/zenodo.20058732)
 # TheraTime
 
 TheraTime is an offline research software framework for therapeutic timing evaluation in mental-health response retrieval.
