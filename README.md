@@ -105,11 +105,3 @@ python scripts/theratime_error_recall.py \
   --annotations2 annotations/theratime_human_annotations_Asmae_150_updated_reviewed.csv \
   --out theratime_screening_recall_report.csv
 ```
-
-## Paper
-
-The LaTeX manuscript is provided in `paper/`. Before submission, replace the repository placeholder and Zenodo placeholder with the final GitHub URL and Zenodo DOI.
-
-## Citation
-
-After archiving the repository on Zenodo, update `CITATION.cff` with the DOI.
