@@ -1,3 +1,4 @@
+%%writefile theratime_kappa.py
 """
 theratime_kappa.py
 ──────────────────
