@@ -4,10 +4,9 @@
   "repository": "https://github.com/briouyaasmae/theratime",
   "archived_release_doi": "10.5281/zenodo.20058732",
   "annotation_naming": {
-    "internal1": "annotations/theratime_300_internal1.csv",
-    "internal2": "annotations/theratime_300_internal2.csv",
-    "external": "annotations/theratime_300_external.csv",
-    "template": "annotations/theratime_annotation_template.csv"
+    "internal1": "annotations/theratime_annotation_sample_300_internal1.csv",
+    "internal2": "annotations/theratime_annotation_sample_300_internal2.csv",
+    "external": "annotations/theratime_annotation_sample_300_external.csv",
   },
   "files": [
     ".github/workflows/smoke-test.yml",
@@ -15,10 +14,9 @@
     "CITATION.cff",
     "LICENSE",
     "README.md",
-    "annotations/theratime_300_internal1.csv",
-    "annotations/theratime_300_internal2.csv",
-    "annotations/theratime_300_external.csv",
-    "annotations/theratime_annotation_template.csv",
+    "annotations/theratime_annotation_sample_300_internal1.csv",
+    "annotations/theratime_annotation_sample_300_internal2.csv",
+    "annotations/theratime_annotation_sample_300_external.csv",
     "examples/example_kaggle_commands.md",
     "notebooks/theratime.ipynb",
     "paper/theratime_neurocomputing_submission_ready.tex",
