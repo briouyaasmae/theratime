@@ -20,9 +20,9 @@ It is not a therapy chatbot, not a clinical decision-support system, and not val
 
 ```text
 annotations/
-  theratime_300_internal1.csv           # completed 300-example annotations: Internal 1
-  theratime_300_internal2.csv           # completed 300-example annotations: Internal 2
-  theratime_300_external.csv            # completed 300-example annotations: External
+  theratime_annotation_sample_300_internal1.csv           # completed 300-example annotations: Internal 1
+  theratime_annotation_sample_300_internal2.csv           # completed 300-example annotations: Internal 2
+  theratime_annotation_sample_300_external.csv            # completed 300-example annotations: External
   theratime_annotation_template.csv     # blank reusable annotation template
 
 scripts/
@@ -51,9 +51,9 @@ CITATION.cff
 
 The primary study uses three completed annotation CSV files:
 
-- `theratime_300_internal1.csv`
-- `theratime_300_internal2.csv`
-- `theratime_300_external.csv`
+- `theratime_annotation_sample_300_internal1.csv`
+- `theratime_annotation_sample_300_internal2.csv`
+- `theratime_annotation_sample_300_external.csv`
 
 The labels `Internal 1`, `Internal 2`, and `External` identify annotation roles in the paper and repository without embedding personal names in analysis filenames.
 
@@ -101,18 +101,18 @@ For local execution, edit `OUTPUT_DIR` or adapt it to a local path.
 
 ```bash
 python scripts/theratime_kappa.py -f \
-  annotations/theratime_300_internal1.csv \
-  annotations/theratime_300_internal2.csv \
+  annotations/theratime_annotation_sample_300_internal1.csv \
+  annotations/theratime_annotation_sample_300_internal2.csv \
   --out-prefix internal1_internal2
 
 python scripts/theratime_kappa.py -f \
-  annotations/theratime_300_internal1.csv \
-  annotations/theratime_300_external.csv \
+  annotations/theratime_annotation_sample_300_internal1.csv \
+  annotations/theratime_annotation_sample_300_external.csv \
   --out-prefix internal1_external
 
 python scripts/theratime_kappa.py -f \
-  annotations/theratime_300_internal2.csv \
-  annotations/theratime_300_external.csv \
+  annotations/theratime_annotation_sample_300_internal2.csv \
+  annotations/theratime_annotation_sample_300_external.csv \
   --out-prefix internal2_external
 ```
 
@@ -134,9 +134,9 @@ The primary analysis includes pooled five-fold out-of-fold evaluation, bootstrap
 ```bash
 python scripts/theratime_calibration_robustness.py \
   --auto /kaggle/working/theratime_v06_outputs/all_judgments_mpnet.csv \
-  --ann annotations/theratime_300_internal1.csv \
-        annotations/theratime_300_internal2.csv \
-        annotations/theratime_300_external.csv \
+  --ann annotations/theratime_annotation_sample_300_internal1.csv \
+        annotations/theratime_annotation_sample_300_internal2.csv \
+        annotations/theratime_annotation_sample_300_external.csv \
   --out-dir /kaggle/working/theratime_robustness_outputs_v3 \
   --methods baseline conservative_human_recompute safe_keep_correct_review \
   --k-folds 5
@@ -169,9 +169,9 @@ sys.path.insert(0, "scripts")
 import theratime_post_calibration as tpc
 
 annotation_paths = [
-    Path("annotations/theratime_300_internal1.csv"),
-    Path("annotations/theratime_300_internal2.csv"),
-    Path("annotations/theratime_300_external.csv"),
+    Path("annotations/theratime_annotation_sample_300_internal1.csv"),
+    Path("annotations/theratime_annotation_sample_300_internal2.csv"),
+    Path("annotations/theratime_annotation_sample_300_external.csv"),
 ]
 
 consensus_df, _ = tpc.build_consensus(
@@ -239,8 +239,8 @@ These analyses are secondary diagnostics. They do not replace the pooled five-fo
 ```bash
 python scripts/theratime_error_recall.py \
   --disagreements internal1_external_disagreements.csv \
-  --annotations1 annotations/theratime_300_internal1.csv \
-  --annotations2 annotations/theratime_300_external.csv \
+  --annotations1 annotations/theratime_annotation_sample_300_internal1.csv \
+  --annotations2 annotations/theratime_annotation_sample_300_external.csv \
   --out internal1_external_screening_recall_report.csv \
   --json internal1_external_recall_summary.json
 ```
