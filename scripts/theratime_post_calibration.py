@@ -39,22 +39,6 @@ This version fixes the main validity problems of the earlier script:
    - It does not change labels.
    - Reliability results are reported with coverage and held-out accuracy.
 
-Recommended workflow
---------------------
-The same script supports both:
-- 2 annotators with approximately 150 examples;
-- 3 annotators with approximately 300 examples.
-
-In --consensus-mode auto, two annotators use unanimous consensus and
-three or more annotators use majority consensus.
-
-Example with three annotators and 300 examples:
-
-python theratime_post_calibration.py \
-  --auto /kaggle/working/theratime_v06_outputs/all_judgments_mpnet.csv \
-  --ann /kaggle/input/.../theratime_300_internal1.csv \
-        /kaggle/input/.../theratime_300_internal2.csv \
-  --out-dir /kaggle/working/theratime_post_calibration_v2
 
 Important interpretation
 ------------------------
