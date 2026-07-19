@@ -22,8 +22,8 @@ Run `theratime_kappa.py` once for each annotator pair. A unique `--out-prefix` p
 
 ```python
 !python scripts/theratime_kappa.py -f \
-  annotations/theratime_300_internal1.csv \
-  annotations/theratime_300_internal2.csv \
+  annotations/theratime_annotation_sample_300_internal1.csv \
+  annotations/theratime_annotation_sample_300_internal2.csv \
   --out-prefix /kaggle/working/internal1_internal2
 ```
 
@@ -31,8 +31,8 @@ Run `theratime_kappa.py` once for each annotator pair. A unique `--out-prefix` p
 
 ```python
 !python scripts/theratime_kappa.py -f \
-  annotations/theratime_300_internal1.csv \
-  annotations/theratime_300_external.csv \
+  annotations/theratime_annotation_sample_300_internal1.csv \
+  annotations/theratime_annotation_sample_300_external.csv \
   --out-prefix /kaggle/working/internal1_external
 ```
 
@@ -40,8 +40,8 @@ Run `theratime_kappa.py` once for each annotator pair. A unique `--out-prefix` p
 
 ```python
 !python scripts/theratime_kappa.py -f \
-  annotations/theratime_300_internal2.csv \
-  annotations/theratime_300_external.csv \
+  annotations/theratime_annotation_sample_300_internal2.csv \
+  annotations/theratime_annotation_sample_300_external.csv \
   --out-prefix /kaggle/working/internal2_external
 ```
 
@@ -63,9 +63,9 @@ These runs produce:
 ```python
 !python scripts/theratime_calibration_robustness.py \
   --auto /kaggle/working/theratime_v06_outputs/all_judgments_mpnet.csv \
-  --ann annotations/theratime_300_internal1.csv \
-        annotations/theratime_300_internal2.csv \
-        annotations/theratime_300_external.csv \
+  --ann annotations/theratime_annotation_sample_300_internal1.csv \
+        annotations/theratime_annotation_sample_300_internal2.csv \
+        annotations/theratime_annotation_sample_300_external.csv \
   --out-dir /kaggle/working/theratime_robustness_outputs_v3 \
   --methods baseline conservative_human_recompute safe_keep_correct_review \
   --k-folds 5
@@ -102,8 +102,8 @@ The notebook applies `theratime_error_recall.py` as a secondary diagnostic to th
 ```python
 !python scripts/theratime_error_recall.py \
   --disagreements /kaggle/working/internal1_external_disagreements.csv \
-  --annotations1 annotations/theratime_300_internal1.csv \
-  --annotations2 annotations/theratime_300_external.csv \
+  --annotations1 annotations/theratime_annotation_sample_300_internal1.csv \
+  --annotations2 annotations/theratime_annotation_sample_300_external.csv \
   --out /kaggle/working/internal1_external_screening_recall_report.csv \
   --json /kaggle/working/internal1_external_recall_summary.json
 ```
