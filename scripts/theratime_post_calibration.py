@@ -1,3 +1,4 @@
+%%writefile theratime_post_calibration.py
 #!/usr/bin/env python3
 """
 theratime_post_calibration.py
