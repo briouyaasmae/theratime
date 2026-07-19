@@ -762,8 +762,8 @@ def main():
 
     # Detect the two annotators dynamically from the column names generated
     # by theratime_kappa.py. This supports pairs such as:
-    #   Asmae / external
-    #   Hasnae / Asmae
+    #   Internal_2 / external
+    #   Internal_1 / Internal_2
     #   Internal_1 / External
     try:
         annotator_1, annotator_2 = detect_annotator_prefixes(disagree_df)
