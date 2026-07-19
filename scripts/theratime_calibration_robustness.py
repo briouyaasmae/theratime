@@ -40,7 +40,7 @@ Typical usage
 -------------
 python theratime_calibration_robustness.py \
   --auto all_judgments_mpnet.csv \
-  --ann theratime_300_internal2.csv theratime_300_internal1.csv theratime_300_external.csv \
+  --ann theratime_300_internal2.csv theratime_annotation_sample_300_internal1.csv theratime_annotation_sample_300_external.csv \
   --out-dir theratime_robustness_outputs \
   --methods baseline conservative_human_recompute safe_keep_correct_review \
   --seeds 0 1 2 3 4 5 6 7 8 9 \
