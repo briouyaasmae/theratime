@@ -193,7 +193,6 @@ python scripts/theratime_selective_reliability.py \
 
 The illustrative retrieval experiment uses public datasets (ESConv, CounselChat, MentalChat16K) obtainable from their original sources under their respective licenses.
 
-The 300-example, three-annotator human-validation files referenced in this README are required to reproduce the calibration and agreement analyses. [State here whether these files are included in this repository, hosted elsewhere, or available on request, and if on request, the procedure for requesting access.]
 
 ## License
 
