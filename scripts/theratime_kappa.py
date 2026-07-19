@@ -16,8 +16,8 @@ Usage examples:
 
 Kaggle example:
   !python theratime_kappa.py -f \
-    /kaggle/input/datasets/asmaeassmaebriouya/annotations/theratime_150_Hasnae_human_corrected_annotations.csv \
-    /kaggle/input/datasets/asmaeassmaebriouya/annotations/theratime_human_annotations_Asmae_150_updated_reviewed.csv
+    /kaggle/input/datasets/asmaeassmaebriouya/annotations/theratime_internal1_human_corrected_annotations.csv \
+    /kaggle/input/datasets/asmaeassmaebriouya/annotations/theratime_human_annotations_internal2_updated_reviewed.csv
 
 Outputs:
   - kappa for stage_correct  (Q1)
