@@ -1,3 +1,4 @@
+%%writefile theratime_selective_reliability.py
 """
 theratime_selective_reliability.py
 ──────────────────────────────────
@@ -55,26 +56,56 @@ def safe_numeric(series: pd.Series, default: float = 0.0) -> pd.Series:
     return pd.to_numeric(series, errors="coerce").fillna(default)
 
 
-def prepare_df(path: Path) -> pd.DataFrame:
+def prepare_df(path: Path) -> tuple[pd.DataFrame, str]:
     df = pd.read_csv(path).fillna("")
 
     if "rank" in df.columns:
         df["rank_for_analysis"] = safe_numeric(df["rank"], -1).astype(int)
     elif "rank_for_calibration" in df.columns:
-        df["rank_for_analysis"] = safe_numeric(df["rank_for_calibration"], -1).astype(int)
+        df["rank_for_analysis"] = safe_numeric(
+            df["rank_for_calibration"], -1
+        ).astype(int)
     else:
         df["rank_for_analysis"] = 1
 
     if "calibrated_is_well_timed" in df.columns:
-        df["final_is_well_timed"] = as_bool_series(df["calibrated_is_well_timed"])
+        df["final_is_well_timed"] = as_bool_series(
+            df["calibrated_is_well_timed"]
+        )
     elif "is_well_timed" in df.columns:
         df["final_is_well_timed"] = as_bool_series(df["is_well_timed"])
     elif "calibrated_timing" in df.columns:
-        df["final_is_well_timed"] = df["calibrated_timing"].astype(str).eq("well_timed")
+        df["final_is_well_timed"] = (
+            df["calibrated_timing"].astype(str).str.strip().str.lower()
+            == "well_timed"
+        )
     elif "timing_label" in df.columns:
-        df["final_is_well_timed"] = df["timing_label"].astype(str).eq("well_timed")
+        df["final_is_well_timed"] = (
+            df["timing_label"].astype(str).str.strip().str.lower()
+            == "well_timed"
+        )
     else:
-        raise ValueError("Could not find timing label or is_well_timed column.")
+        raise ValueError(
+            "Could not find calibrated_is_well_timed, is_well_timed, "
+            "calibrated_timing, or timing_label."
+        )
+
+    # Prefer the human-validated correctness column from pooled held-out
+    # evaluation files. Fall back to a descriptive well-timed indicator only
+    # for legacy output files that do not contain human correctness.
+    if "calibrated_timing_correct" in df.columns:
+        df["analysis_outcome"] = as_bool_series(
+            df["calibrated_timing_correct"]
+        )
+        outcome_type = "human_validated_timing_accuracy"
+    elif "original_timing_correct" in df.columns:
+        df["analysis_outcome"] = as_bool_series(
+            df["original_timing_correct"]
+        )
+        outcome_type = "human_validated_original_timing_accuracy"
+    else:
+        df["analysis_outcome"] = df["final_is_well_timed"].astype(bool)
+        outcome_type = "descriptive_well_timed_rate"
 
     if "stage_confidence" not in df.columns:
         df["stage_confidence"] = 0.0
@@ -87,31 +118,35 @@ def prepare_df(path: Path) -> pd.DataFrame:
     df["move_confidence"] = safe_numeric(df["move_confidence"], 0.0)
     df["retrieval_score"] = safe_numeric(df["retrieval_score"], 0.0)
 
-    # Conservative reliability score.
-    # The minimum is used because timing depends on both stage and move.
-    df["margin_reliability_score"] = df[["stage_confidence", "move_confidence"]].min(axis=1)
+    df["margin_reliability_score"] = df[
+        ["stage_confidence", "move_confidence"]
+    ].min(axis=1)
 
-    # If isotonic reliability exists, use it as another reliability signal.
     if "isotonic_overall_reliability" in df.columns:
-        df["isotonic_overall_reliability"] = safe_numeric(df["isotonic_overall_reliability"], 0.0)
+        df["isotonic_overall_reliability"] = safe_numeric(
+            df["isotonic_overall_reliability"], 0.0
+        )
     else:
         df["isotonic_overall_reliability"] = np.nan
 
-    # Hybrid reliability:
-    # Prefer isotonic if available and non-empty, otherwise fallback to margin score.
-    valid_iso = df["isotonic_overall_reliability"].notna() & (df["isotonic_overall_reliability"] > 0)
+    valid_iso = (
+        df["isotonic_overall_reliability"].notna()
+        & (df["isotonic_overall_reliability"] > 0)
+    )
     df["hybrid_reliability_score"] = df["margin_reliability_score"]
-    df.loc[valid_iso, "hybrid_reliability_score"] = df.loc[valid_iso, "isotonic_overall_reliability"]
+    df.loc[valid_iso, "hybrid_reliability_score"] = df.loc[
+        valid_iso, "isotonic_overall_reliability"
+    ]
 
-    # Normalize margin reliability to 0..1 for easier thresholding.
-    margin = df["margin_reliability_score"].values.astype(float)
-    if np.max(margin) > np.min(margin):
-        df["margin_reliability_score_01"] = (margin - np.min(margin)) / (np.max(margin) - np.min(margin))
+    margin = df["margin_reliability_score"].to_numpy(dtype=float)
+    if len(margin) and np.max(margin) > np.min(margin):
+        df["margin_reliability_score_01"] = (
+            margin - np.min(margin)
+        ) / (np.max(margin) - np.min(margin))
     else:
         df["margin_reliability_score_01"] = 0.5
 
-    return df
-
+    return df, outcome_type
 
 def risk_coverage_table(
     df_rank1: pd.DataFrame,
@@ -133,8 +168,8 @@ def risk_coverage_table(
         k = max(1, int(round(cov * n)))
         subset = ranked.iloc[:k]
 
-        tta = float(subset["final_is_well_timed"].mean())
-        risk = 1.0 - tta
+        outcome = float(subset["analysis_outcome"].mean())
+        risk = 1.0 - outcome
         threshold = float(subset[score_col].min())
 
         rows.append({
@@ -144,7 +179,7 @@ def risk_coverage_table(
             "n_accepted": int(k),
             "n_total": int(n),
             "threshold": round(threshold, 6),
-            "selective_TTA_at_1": round(tta, 4),
+            "selective_outcome": round(outcome, 4),
             "selective_risk": round(risk, 4),
         })
 
@@ -158,7 +193,7 @@ def area_under_risk_coverage(rc_df: pd.DataFrame) -> float:
     d = rc_df.sort_values("actual_coverage")
     x = d["actual_coverage"].values
     y = d["selective_risk"].values
-    return float(np.trapz(y, x))
+    return float(np.trapezoid(y, x))
 
 
 def add_review_flags(
@@ -230,11 +265,11 @@ def plot_coverage_tta(rc_df: pd.DataFrame, out_dir: Path):
     plt.figure(figsize=(8, 5))
     for score_col, group in rc_df.groupby("score_column"):
         group = group.sort_values("actual_coverage")
-        plt.plot(group["actual_coverage"], group["selective_TTA_at_1"], marker="o", label=score_col)
+        plt.plot(group["actual_coverage"], group["selective_outcome"], marker="o", label=score_col)
 
     plt.xlabel("Coverage")
-    plt.ylabel("Selective TTA@1, higher is better")
-    plt.title("TheraTime selective TTA@1 by coverage")
+    plt.ylabel("Selective outcome, higher is better")
+    plt.title("TheraTime selective outcome by coverage")
     plt.grid(True, alpha=0.3)
     plt.legend()
     plt.tight_layout()
@@ -272,7 +307,7 @@ def main():
     out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    df = prepare_df(input_path)
+    df, outcome_type = prepare_df(input_path)
     rank1 = df[df["rank_for_analysis"] == 1].copy()
 
     if len(rank1) == 0:
@@ -318,7 +353,7 @@ def main():
         selected_coverage = 1.0
     else:
         threshold = float(selected_rc.iloc[0]["threshold"])
-        selected_tta = float(selected_rc.iloc[0]["selective_TTA_at_1"])
+        selected_tta = float(selected_rc.iloc[0]["selective_outcome"])
         selected_coverage = float(selected_rc.iloc[0]["actual_coverage"])
 
     flagged = add_review_flags(df, selected_score, threshold)
@@ -328,26 +363,47 @@ def main():
     rank1_flagged = flagged[flagged["rank_for_analysis"] == 1].copy()
     review_counts = rank1_flagged["review_recommendation"].value_counts().to_dict()
 
-    baseline_tta = float(rank1["final_is_well_timed"].mean())
+    n_rank1 = int(len(rank1_flagged))
+    n_accept = int(review_counts.get("accept", 0))
+    n_human_review = int(review_counts.get("human_review", 0))
+    n_high_risk_review = int(review_counts.get("high_risk_review", 0))
+
+    final_acceptance_coverage = (
+        float(n_accept / n_rank1) if n_rank1 else 0.0
+    )
+    final_review_rate = (
+        float((n_human_review + n_high_risk_review) / n_rank1)
+        if n_rank1 else 0.0
+    )
+
+    baseline_tta = float(rank1["analysis_outcome"].mean())
 
     summary = {
         "input_file": str(input_path),
         "n_rows": int(len(df)),
         "n_rank1": int(len(rank1)),
-        "baseline_or_calibrated_TTA_at_1_all_rank1": round(baseline_tta, 4),
+        "outcome_type": outcome_type,
+        "all_rank1_outcome": round(baseline_tta, 4),
         "preferred_coverage": args.preferred_coverage,
         "selected_score": selected_score,
         "selected_threshold": round(threshold, 6),
-        "selective_TTA_at_1_at_preferred_coverage": round(selected_tta, 4),
-        "actual_coverage_at_preferred_setting": round(selected_coverage, 4),
+        "selective_outcome_at_preferred_coverage": round(selected_tta, 4),
+        "nominal_rank_selected_coverage": round(selected_coverage, 4),
+        "final_acceptance_coverage_after_safety_override": round(
+            final_acceptance_coverage, 4
+        ),
+        "final_review_rate_after_safety_override": round(
+            final_review_rate, 4
+        ),
         "selective_gain_vs_all_rank1": round(selected_tta - baseline_tta, 4),
         "review_counts_rank1": review_counts,
         "risk_coverage_csv": str(rc_path),
         "review_flags_csv": str(flags_path),
         "paper_safe_interpretation": (
             "Selective reliability analysis evaluates when TheraTime judgments are more trustworthy. "
-            "The system is not forced to accept every automatic judgment; low-reliability or safety-sensitive "
-            "cases can be flagged for human review."
+            "The nominal rank-selected coverage is reported separately from final acceptance coverage "
+            "after safety-sensitive overrides. Low-reliability or safety-sensitive cases are sent to "
+            "human review."
         ),
     }
 
@@ -372,7 +428,9 @@ def main():
     print(f"Selected threshold           : {threshold:.6f}")
     print(f"Selective TTA@1              : {selected_tta:.4f}")
     print(f"Selective gain               : {selected_tta - baseline_tta:.4f}")
-    print(f"Actual coverage              : {selected_coverage:.4f}")
+    print(f"Nominal rank-selected coverage: {selected_coverage:.4f}")
+    print(f"Final acceptance coverage     : {final_acceptance_coverage:.4f}")
+    print(f"Final review rate             : {final_review_rate:.4f}")
     print()
     print("Rank-1 review counts:")
     for key, value in review_counts.items():
