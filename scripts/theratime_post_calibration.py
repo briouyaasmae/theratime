@@ -52,8 +52,8 @@ Example with three annotators and 300 examples:
 
 python theratime_post_calibration.py \
   --auto /kaggle/working/theratime_v06_outputs/all_judgments_mpnet.csv \
-  --ann /kaggle/input/.../theratime_300_Hasnae.csv \
-        /kaggle/input/.../theratime_300_Asmae.csv \
+  --ann /kaggle/input/.../theratime_300_internal1.csv \
+        /kaggle/input/.../theratime_300_internal2.csv \
   --out-dir /kaggle/working/theratime_post_calibration_v2
 
 Important interpretation
